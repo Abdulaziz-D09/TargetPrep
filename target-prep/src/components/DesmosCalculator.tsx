@@ -89,14 +89,32 @@ export default function DesmosCalculator({ mode, isDragging }: DesmosCalculatorP
         };
     }, [isLoaded, mode]);
 
-    // Resize the calculator when the panel is resized
+    // Resize the calculator when the panel size changes
     useEffect(() => {
         if (!isDragging && calcRef.current) {
-            // Small delay to let the DOM settle after drag
+            // Give DOM time to settle if dragging finished
             const t = setTimeout(() => calcRef.current?.resize(), 50);
             return () => clearTimeout(t);
         }
     }, [isDragging]);
+
+    // Use ResizeObserver to ensure it handles hiding/showing correctly
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container) return;
+        
+        const observer = new ResizeObserver(() => {
+            if (calcRef.current) {
+                calcRef.current.resize();
+            }
+        });
+        
+        observer.observe(container);
+        
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
 
     if (error) {
         return (

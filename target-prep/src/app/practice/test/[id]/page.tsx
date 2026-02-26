@@ -272,8 +272,10 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
         }
 
         return (
-            <div className="h-full flex items-center justify-center bg-slate-50 p-8 fade-in">
-                <div className="max-w-lg w-full text-center bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-slate-100 p-12">
+            <div className="h-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50/40 p-8 fade-in relative overflow-hidden">
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-indigo-400/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div className="max-w-lg w-full text-center bg-white/80 backdrop-blur-md rounded-3xl shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-white/50 p-12 relative z-10">
                     <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-200">
                         <Trophy className="w-12 h-12 text-white" />
                     </div>
@@ -408,7 +410,7 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
             className="h-[100dvh] flex flex-col bg-slate-50 font-[system-ui,-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,sans-serif] overflow-hidden"
         >
             {/* Bluebook Official Header */}
-            <header className="bg-blue-50/60 border-b border-blue-100 px-4 py-2 flex items-center justify-between z-30 shrink-0 relative shadow-sm">
+            <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/80 px-6 py-3 flex items-center justify-between z-30 shrink-0 relative shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
                 {/* Left: Directions Dropdown */}
                 <div className="flex-1">
                     <div className="flex flex-col ml-4">
@@ -436,21 +438,21 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
                 </div>
 
                 {/* Center: Timer */}
-                <div className="flex flex-col items-center flex-1">
+                <div className="flex flex-col items-center justify-center flex-1 absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 w-[180px]">
                     {!isTimerHidden ? (
-                        <div className="font-bold text-[22px] tracking-tight text-[#111827] flex items-center justify-center gap-2">
+                        <div className="font-bold text-[20px] font-mono tracking-wider text-slate-800 flex items-center justify-center gap-2 bg-slate-100/80 backdrop-blur-sm px-5 py-1.5 rounded-full border border-slate-200 shadow-inner">
                             {formatBluebookTime(timeRemaining)}
                         </div>
                     ) : (
-                        <div className="font-bold text-[22px] tracking-tight text-[#111827] flex items-center justify-center gap-2 flex items-center gap-2 opactiy-50 mb-1">
+                        <div className="font-bold text-[22px] tracking-tight flex items-center justify-center gap-2 opacity-50 mb-1">
                             <Clock className="w-5 h-5 text-slate-400" />
                         </div>
                     )}
                     <button
                         onClick={() => setIsTimerHidden(!isTimerHidden)}
-                        className="text-[12px] font-bold text-slate-600 hover:text-slate-800 bg-white/60 hover:bg-white/80 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-sm border border-black/5 transition-all mt-1"
+                        className="text-[11px] font-bold tracking-widest uppercase text-slate-500 hover:text-indigo-600 bg-transparent px-4 py-1.5 rounded-full transition-colors mt-0.5"
                     >
-                        {isTimerHidden ? 'Show' : 'Hide'}
+                        {isTimerHidden ? 'Show Timer' : 'Hide Timer'}
                     </button>
                 </div>
 
@@ -622,7 +624,7 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
                                                         }
                                                     }}
                                                     htmlFor={`opt-${i}`}
-                                                    className={`relative flex-1 p-3 px-4 border min-h-[58px] rounded-[10px] flex items-center cursor-pointer transition-all overflow-hidden ${isSelected ? 'border-[#111827] shadow-[inset_0_0_0_1px_#111827,0_0_0_1.5px_#111827] bg-[#f8fafc]' : 'border-slate-400 hover:border-slate-500 bg-white hover:bg-[#F3F4F6]'}`}
+                                                    className={`relative flex-1 p-3 px-4 border min-h-[58px] rounded-[10px] flex items-center cursor-pointer transition-all duration-200 overflow-hidden ${isSelected ? 'border-indigo-600 shadow-[inset_0_0_0_1px_#4f46e5,0_2px_8px_rgba(79,70,229,0.15)] bg-indigo-50/30' : 'border-slate-300 hover:border-slate-400 bg-white hover:bg-slate-50 hover:shadow-sm'}`}
                                                 >
                                                     <input
                                                         type="radio"
@@ -636,7 +638,7 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
                                                     />
 
                                                     {/* Letter Circle inside the box */}
-                                                    <div className={`w-[26px] h-[26px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center font-bold text-[13px] mr-4 transition-colors ${isSelected ? 'border-[#111827] text-[#111827] bg-[#f8fafc]' : 'border-slate-900 text-slate-900'}`}>
+                                                    <div className={`w-[28px] h-[28px] rounded-full border-[1.5px] flex-shrink-0 flex items-center justify-center font-bold text-[13px] mr-4 transition-colors ${isSelected ? 'border-indigo-600 text-white bg-indigo-600 shadow-sm' : 'border-slate-400 text-slate-700'}`}>
                                                         {letter}
                                                     </div>
 
@@ -741,8 +743,8 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
                 )}
             </main>
 
-            {/* Bluebook Bottom Navigation Bar */}
-            <footer className="bg-[#F3F4F6] border-t border-[#D1D5DB] px-6 h-[70px] flex items-center justify-between shrink-0 absolute bottom-0 left-0 right-0 z-40">
+            {/* Premium Bottom Navigation Bar */}
+            <footer className="bg-white/80 backdrop-blur-lg border-t border-slate-200/80 px-8 h-[76px] flex items-center justify-between shrink-0 absolute bottom-0 left-0 right-0 z-40 shadow-[0_-2px_15px_rgba(0,0,0,0.03)]">
                 <div className="w-48"></div>
 
                 {!showCheckWork && (
@@ -767,13 +769,13 @@ export default function TestInterfacePage({ params }: { params: Promise<{ id: st
                             }
                         }}
                         disabled={currentQuestionIndex === 0 && !showCheckWork}
-                        className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-2 rounded-full font-bold text-[15px] transition-all disabled:opacity-50 disabled:bg-slate-400 disabled:cursor-not-allowed"
+                        className="bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-700 px-8 py-2.5 rounded-full font-bold text-[15px] transition-all disabled:opacity-40 disabled:hover:border-slate-200 disabled:cursor-not-allowed shadow-sm hover:shadow-md hover:bg-slate-50"
                     >
                         Back
                     </button>
                     <button
                         onClick={handleNext}
-                        className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-2 rounded-full font-bold text-[15px] transition-all disabled:opacity-50"
+                        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-9 py-2.5 rounded-full font-bold text-[15px] transition-all disabled:opacity-50 disabled:from-slate-400 disabled:to-slate-500 shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/30 transform hover:-translate-y-0.5 active:translate-y-0"
                     >
                         {showCheckWork && isFinalStep ? 'Submit' : 'Next'}
                     </button>
