@@ -8,7 +8,7 @@ export default function HomePage() {
   const [date, setDate] = useState('');
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [stats, setStats] = useState({ streak: 12, avgScore: 1280, completed: 8 });
-  const [expired, setExpired] = useState(false);
+
   const [selectedDate, setSelectedDate] = useState<any>(null);
   const [drawerTimeLeft, setDrawerTimeLeft] = useState<{ days: number, hours: number, mins: number, secs: number } | null>(null);
   const [drawerRegTimeLeft, setDrawerRegTimeLeft] = useState<{ days: number, hours: number, mins: number, secs: number } | null>(null);
@@ -35,10 +35,7 @@ export default function HomePage() {
       const now = new Date().getTime();
       const distance = targetDate - now;
 
-      if (distance < 0) {
-        setExpired(true);
-        return false;
-      }
+      return false;
 
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
@@ -119,24 +116,20 @@ export default function HomePage() {
               <span className="font-semibold tracking-wide uppercase text-sm">Next SAT Countdown</span>
             </div>
 
-            {expired ? (
-              <div className="text-2xl font-bold mt-4">Exam time has arrived! Good luck! 🎯</div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
-                {[
-                  { label: 'Days', val: timeLeft.days },
-                  { label: 'Hours', val: timeLeft.hours },
-                  { label: 'Minutes', val: timeLeft.minutes },
-                  { label: 'Seconds', val: timeLeft.seconds }
-                ].map((item) => (
-                  <div key={item.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
-                    <div className="text-4xl font-bold mb-1">{item.val.toString().padStart(2, '0')}</div>
-                    <div className="text-sm text-blue-100 font-medium">{item.label}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-            <p className="mt-4 text-blue-100 text-sm">Next SAT Test: March 14th, 2026 8:00 AM</p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-2xl">
+              {[
+                { label: 'Days', val: Math.max(0, timeLeft.days) },
+                { label: 'Hours', val: Math.max(0, timeLeft.hours) },
+                { label: 'Minutes', val: Math.max(0, timeLeft.minutes) },
+                { label: 'Seconds', val: Math.max(0, timeLeft.seconds) }
+              ].map((item) => (
+                <div key={item.label} className="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                  <div className="text-4xl font-bold mb-1">{item.val.toString().padStart(2, '0')}</div>
+                  <div className="text-sm text-blue-100 font-medium">{item.label}</div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-4 text-blue-100 text-sm">Next SAT Test: March 14th 8:00 AM</p>
           </div>
         </div>
 
@@ -220,130 +213,187 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Centered Modal Overlay */}
-      {
-        selectedDate && (
-          <div className="fixed inset-0 lg:left-64 z-50 flex items-center justify-center p-4">
-            {/* Blurry Backdrop */}
-            <div
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
-              onClick={() => setSelectedDate(null)}
-            ></div>
+      {/* Slide-out Drawer */}
+      {selectedDate && (
+        <div className="fixed inset-0 lg:left-64 z-50 flex justify-end p-0">
+          {/* Blurry Backdrop */}
+          <div
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setSelectedDate(null)}
+          ></div>
 
-            {/* Centered Modal Panel */}
-            <div className="relative w-full max-w-[500px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh] ">
-
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/80 backdrop-blur">
-                <div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-1">{selectedDate.date}</h2>
-                  <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          {/* Slide-out Drawer Panel */}
+          <div className="relative w-full max-w-[450px] bg-white h-full shadow-2xl flex flex-col overflow-hidden animate-slide-in-right">
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between p-6 border-b border-slate-200 bg-slate-50/80 backdrop-blur">
+              <div>
+                <h2 className="text-3xl font-bold text-slate-900 mb-2">{selectedDate.date}</h2>
+                {drawerRegTimeLeft ? (
+                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 uppercase tracking-wide">
                     Registration Open
                   </div>
-                </div>
-                <button
-                  onClick={() => setSelectedDate(null)}
-                  className="p-2 -mr-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-
-              {/* Modal Content - Scrollable */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-
-                {/* Deadlines Section */}
-                <section>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
-                    <Calendar className="w-4 h-4" /> Dates & Deadlines
-                  </h3>
-                  <div className="bg-white border text-[14px] border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <div className="p-4 border-b border-slate-100 flex justify-between items-center group hover:bg-slate-50 transition-colors">
-                      <span className="font-medium text-slate-700">Registration Deadline</span>
-                      <span className="font-bold text-slate-900">{selectedDate.registrationDeadline}</span>
-                    </div>
-                    <div className="p-4 border-b border-slate-100 flex flex-col group hover:bg-slate-50 transition-colors">
-                      <div className="flex justify-between items-start mb-1">
-                        <span className="font-medium text-slate-700">Late Registration</span>
-                        <span className="font-bold text-slate-900">{selectedDate.lateRegistrationDeadline}</span>
-                      </div>
-                      <span className="text-xs text-orange-600 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Additional $34 late fee applies</span>
-                    </div>
-                    <div className="p-4 flex justify-between items-center group hover:bg-slate-50 transition-colors">
-                      <span className="font-medium text-slate-700">Changes / Cancellation</span>
-                      <span className="font-bold text-slate-900">{selectedDate.changeDeadline}</span>
-                    </div>
+                ) : (
+                  <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 uppercase tracking-wide">
+                    Closed
                   </div>
-                </section>
-
-                {/* Fees Section */}
-                <section>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
-                    <Info className="w-4 h-4" /> Fees structure
-                  </h3>
-                  <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-3 shadow-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700 text-[15px]">Standard Registration</span>
-                      <span className="font-bold text-slate-900">$68</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700 text-[15px]">Late Registration Fee</span>
-                      <span className="font-bold text-slate-900">+$34</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700 text-[15px]">Test Center Change</span>
-                      <span className="font-bold text-slate-900">+$29</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700 text-[15px]">Cancel Registration</span>
-                      <span className="font-bold text-slate-900">+$29</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-700 text-[15px]">International Fee</span>
-                      <span className="font-bold text-slate-900">+$43</span>
-                    </div>
-                    <div className="pt-3 border-t border-slate-200 mt-2 flex justify-between items-center">
-                      <span className="font-bold text-slate-900">Total (International)</span>
-                      <span className="font-bold text-[#2563EB]">$111</span>
-                    </div>
-                  </div>
-                </section>
-
-                {/* Requirements Section */}
-                <section>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
-                    <FileCheck2 className="w-4 h-4" /> What to Bring & Requirements
-                  </h3>
-                  <ul className="space-y-3">
-                    {[
-                      "Acceptable photo ID (Valid Passport, Driver's License, or School ID).",
-                      "Printed or digital admission ticket from College Board.",
-                      "Fully charged testing device with Bluebook app installed.",
-                      "Arrive at test center by 7:45 AM (doors close roughly at 8:00 AM)."
-                    ].map((req, j) => (
-                      <li key={j} className="flex items-start gap-3">
-                        <div className="min-w-[20px] pt-0.5">
-                          <CheckCircle className="w-4 h-4 text-emerald-500" />
-                        </div>
-                        <span className="text-sm text-slate-700">{req}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+                )}
               </div>
-
-              {/* Modal Footer CTA */}
-              <div className="flex justify-center w-full p-4 bg-white border-t border-slate-200">
-                <a href="https://satreg.collegeboard.org" target="_blank" rel="noopener noreferrer"
-                  className="w-full flex items-center justify-center gap-2 bg-[#111827] text-white px-6 py-3.5 rounded-lg font-bold hover:bg-[#374151] transition-colors shadow-lg">
-                  Register for this SAT
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-
+              <button
+                onClick={() => setSelectedDate(null)}
+                className="p-2 -mr-2 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-full transition-colors"
+                aria-label="Close panel"
+              >
+                <X className="w-6 h-6" />
+              </button>
             </div>
+
+            {/* Modal Content - Scrollable */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+
+              {/* Deadlines Section */}
+              <section>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                  <Calendar className="w-4 h-4" /> Dates & Deadlines
+                </h3>
+                <div className="bg-white border text-[14px] border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                  <div className="p-4 border-b border-slate-100 flex justify-between items-center group hover:bg-slate-50 transition-colors">
+                    <span className="font-medium text-slate-700">Registration Deadline</span>
+                    <span className="font-bold text-slate-900">{selectedDate.registrationDeadline}</span>
+                  </div>
+                  <div className="p-4 border-b border-slate-100 flex flex-col group hover:bg-slate-50 transition-colors">
+                    <div className="flex justify-between items-start mb-1">
+                      <span className="font-medium text-slate-700">Late Registration</span>
+                      <span className="font-bold text-slate-900">{selectedDate.lateRegistrationDeadline}</span>
+                    </div>
+                    <span className="text-xs text-orange-600 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> Additional $34 late fee applies</span>
+                  </div>
+                  <div className="p-4 flex justify-between items-center group hover:bg-slate-50 transition-colors">
+                    <span className="font-medium text-slate-700">Changes / Cancellation</span>
+                    <span className="font-bold text-slate-900">{selectedDate.changeDeadline}</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Fees Section */}
+              <section>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                  <Info className="w-4 h-4" /> Fees structure
+                </h3>
+                <div className="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-3 shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-700 text-[15px]">Standard Registration</span>
+                    <span className="font-bold text-slate-900">$68</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-700 text-[15px]">Late Registration Fee</span>
+                    <span className="font-bold text-slate-900">+$34</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-700 text-[15px]">Test Center Change</span>
+                    <span className="font-bold text-slate-900">+$29</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-700 text-[15px]">Cancel Registration</span>
+                    <span className="font-bold text-slate-900">+$29</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-700 text-[15px]">International Fee</span>
+                    <span className="font-bold text-slate-900">+$43</span>
+                  </div>
+                  <div className="pt-3 border-t border-slate-200 mt-2 flex justify-between items-center">
+                    <span className="font-bold text-slate-900">Total (International)</span>
+                    <span className="font-bold text-[#2563EB]">$111</span>
+                  </div>
+                </div>
+              </section>
+
+              {/* Course/Requirements Section */}
+              <section>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                  <FileCheck2 className="w-4 h-4 text-blue-500" /> What to Bring & Requirements
+                </h3>
+                <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                  <ul className="space-y-4">
+                    <li className="flex items-start gap-3">
+                      <div className="min-w-[24px] pt-0.5">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <span className="text-sm text-slate-700">Valid photo ID (Passport, Driver's License, or School ID).</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="min-w-[24px] pt-0.5">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <span className="text-sm text-slate-700">Printed or digital admission ticket from College Board.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="min-w-[24px] pt-0.5">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <span className="text-sm text-slate-700">Fully charged testing device with Bluebook app installed.</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <div className="min-w-[24px] pt-0.5">
+                        <CheckCircle className="w-5 h-5 text-emerald-500" />
+                      </div>
+                      <span className="text-sm text-slate-700">Arrive by reporting time (doors close roughly at 8:00 AM). Follow test day rules.</span>
+                    </li>
+                  </ul>
+                </div>
+              </section>
+
+              {/* Countdown Section */}
+              <section>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-4 flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-blue-500" /> Countdowns
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {drawerRegTimeLeft ? (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
+                      <span className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2">Registration Deadline</span>
+                      <div className="flex gap-3 text-slate-800 font-mono text-xl font-bold">
+                        <div className="flex flex-col items-center"><span className="text-blue-600">{drawerRegTimeLeft.days.toString().padStart(2, '0')}</span><span className="text-[10px] text-slate-400 uppercase">Days</span></div>:
+                        <div className="flex flex-col items-center"><span className="text-blue-600">{drawerRegTimeLeft.hours.toString().padStart(2, '0')}</span><span className="text-[10px] text-slate-400 uppercase">Hrs</span></div>:
+                        <div className="flex flex-col items-center"><span className="text-blue-600">{drawerRegTimeLeft.mins.toString().padStart(2, '0')}</span><span className="text-[10px] text-slate-400 uppercase">Mins</span></div>:
+                        <div className="flex flex-col items-center"><span className="text-blue-600">{drawerRegTimeLeft.secs.toString().padStart(2, '0')}</span><span className="text-[10px] text-slate-400 uppercase">Secs</span></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-rose-50 border border-rose-100 rounded-xl p-4 text-center">
+                      <span className="text-sm font-semibold text-rose-600">Registration has passed</span>
+                    </div>
+                  )}
+                  {drawerTimeLeft ? (
+                    <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 shadow-sm flex flex-col items-center justify-center">
+                      <span className="text-xs font-semibold text-blue-600 uppercase tracking-widest mb-2">Test Day</span>
+                      <div className="flex gap-3 text-blue-900 font-mono text-xl font-bold">
+                        <div className="flex flex-col items-center"><span>{drawerTimeLeft.days.toString().padStart(2, '0')}</span><span className="text-[10px] text-blue-400 uppercase">Days</span></div>:
+                        <div className="flex flex-col items-center"><span>{drawerTimeLeft.hours.toString().padStart(2, '0')}</span><span className="text-[10px] text-blue-400 uppercase">Hrs</span></div>:
+                        <div className="flex flex-col items-center"><span>{drawerTimeLeft.mins.toString().padStart(2, '0')}</span><span className="text-[10px] text-blue-400 uppercase">Mins</span></div>:
+                        <div className="flex flex-col items-center"><span>{drawerTimeLeft.secs.toString().padStart(2, '0')}</span><span className="text-[10px] text-blue-400 uppercase">Secs</span></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                      <span className="text-sm font-semibold text-slate-600">Test date has passed</span>
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            {/* Modal Footer CTA */}
+            <div className="flex justify-center w-full p-4 bg-white border-t border-slate-200">
+              <a href="https://satreg.collegeboard.org" target="_blank" rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-[#111827] text-white px-6 py-3.5 rounded-lg font-bold hover:bg-[#374151] transition-colors shadow-lg">
+                Register for this SAT
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+
           </div>
-        )
+        </div>
+      )
       }
     </>
   );
