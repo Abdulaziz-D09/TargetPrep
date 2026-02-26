@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Target Prep - SAT Preparation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-item.active { background-color: #eff6ff; color: #2563eb; border-right: 3px solid #2563eb; }
+        .fade-in { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .question-card { transition: all 0.2s ease; }
+        .question-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .option-label:hover { background-color: #f8fafc; }
+        .option-input:checked + .option-label { background-color: #eff6ff; border-color: #2563eb; color: #2563eb; }
+        .progress-ring { transform: rotate(-90deg); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col h-full shadow-sm z-10">
+        <div class="p-6 border-b border-slate-100">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-blue-200 flex-shrink-0 bg-blue-600">
+                    <img src="images/Target logo.jpg" alt="Target Prep Logo" class="w-full h-full object-cover">
+                </div>
+                <div>
+                    <h1 class="font-bold text-xl text-slate-900 tracking-tight">Target Prep</h1>
+                    <p class="text-xs text-slate-500 font-medium">SAT Preparation</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 py-6 px-3 space-y-1">
+            <button onclick="navigateTo('home')" id="nav-home" class="sidebar-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-all duration-200 font-medium text-sm">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span>Home</span>
+            </button>
+            <button onclick="navigateTo('practice')" id="nav-practice" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-all duration-200 font-medium text-sm">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+                <span>Practice Tests</span>
+            </button>
+            <button onclick="navigateTo('progress')" id="nav-progress" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-all duration-200 font-medium text-sm">
+                <i data-lucide="bar-chart-2" class="w-5 h-5"></i>
+                <span>Progress</span>
+            </button>
+            <button onclick="navigateTo('resources')" id="nav-resources" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 hover:bg-slate-50 transition-all duration-200 font-medium text-sm">
+                <i data-lucide="book-open" class="w-5 h-5"></i>
+                <span>Resources</span>
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <p class="text-xs text-blue-600 font-semibold mb-1">Pro Tip</p>
+                <p class="text-xs text-blue-800 leading-relaxed">Practice daily to improve your score by 100+ points!</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto bg-slate-50 relative">
+        
+        <!-- Home View -->
+        <div id="view-home" class="view-section p-8 max-w-6xl mx-auto fade-in">
+            <!-- Header -->
+            <div class="mb-8 flex justify-between items-end">
+                <div>
+                    <p class="text-slate-600">Welcome back! Ready to ace your SAT?</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-slate-500 mb-1" id="current-date"></p>
+                </div>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-8 text-white shadow-xl shadow-blue-200 mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-16 -mt-16"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center gap-2 mb-4 text-blue-100">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                        <span class="font-semibold tracking-wide uppercase text-sm">Next SAT Countdown</span>
+                    </div>
+                    <div id="countdown-container" class="grid grid-cols-4 gap-4 max-w-2xl">
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                            <div id="countdown-days" class="text-4xl font-bold mb-1">--</div>
+                            <div class="text-sm text-blue-100 font-medium">Days</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                            <div id="countdown-hours" class="text-4xl font-bold mb-1">--</div>
+                            <div class="text-sm text-blue-100 font-medium">Hours</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                            <div id="countdown-minutes" class="text-4xl font-bold mb-1">--</div>
+                            <div class="text-sm text-blue-100 font-medium">Minutes</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 text-center border border-white/20">
+                            <div id="countdown-seconds" class="text-4xl font-bold mb-1">--</div>
+                            <div class="text-sm text-blue-100 font-medium">Seconds</div>
+                        </div>
+                    </div>
+                    <div id="countdown-expired" class="hidden text-2xl font-bold mt-4">Exam time has arrived! Good luck! 🎯</div>
+                    <p class="mt-4 text-blue-100 text-sm">Next SAT Test: March 14th, 8:00 AM</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="flame" class="w-6 h-6 text-orange-600"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">Streak</h3>
+                    <p class="text-2xl font-bold text-slate-900 mb-1">12 Days</p>
+                    <p class="text-sm text-slate-500">Keep it up!</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="trending-up" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">Avg. Score</h3>
+                    <p class="text-2xl font-bold text-slate-900 mb-1">1280</p>
+                    <p class="text-sm text-slate-500">+40 from last test</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="font-bold text-slate-900 mb-1">Completed</h3>
+                    <p class="text-2xl font-bold text-slate-900 mb-1">8 Tests</p>
+                    <p class="text-sm text-slate-500">Great progress!</p>
+                </div>
+            </div>
+
+            <!-- Upcoming Dates & Registration -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Upcoming Dates -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-bold text-lg text-slate-900 flex items-center gap-2">
+                            <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+                            Upcoming SAT Dates
+                        </h3>
+                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">2026</span>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-200 transition-colors cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 font-bold text-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    MAR
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-slate-900">March 14, 2026</p>
+                                    <p class="text-xs text-slate-500">Registration Deadline: Feb 27, 2026</p>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-200 transition-colors cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 font-bold text-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    MAY
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-slate-900">May 2, 2026</p>
+                                    <p class="text-xs text-slate-500">Registration Deadline: Apr 17, 2026</p>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100 hover:border-blue-200 transition-colors cursor-pointer group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 font-bold text-sm group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                    JUN
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-slate-900">June 7, 2026</p>
+                                    <p class="text-xs text-slate-500">Registration Deadline: May 9, 2026</p>
+                                </div>
+                            </div>
+                            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registration CTA -->
+                <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl shadow-sm p-6 text-white flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-4 backdrop-blur-sm">
+                            <i data-lucide="external-link" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h3 class="font-bold text-xl mb-2">Ready to Register?</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed mb-6">
+                            Secure your spot for the upcoming SAT. Early registration ensures you get your preferred testing location.
+                        </p>
+                    </div>
+                    <a href="https://satreg.collegeboard.org" target="_blank" class="inline-flex items-center justify-center gap-2 bg-white text-slate-900 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+    Register for SAT
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice Tests View -->
+        <div id="view-practice" class="view-section hidden p-8 max-w-6xl mx-auto fade-in">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Practice Tests</h2>
+                <p class="text-slate-600">Full-length Digital SAT simulations to prepare you for test day.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Test Card 1 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="h-2 bg-blue-600"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">Full Length</span>
+                            <span class="text-slate-400 text-xs">2h 14m</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Practice Test 1</h3>
+                        <p class="text-sm text-slate-600 mb-4">Complete digital SAT simulation with Reading, Writing, and Math sections.</p>
+                        <div class="flex items-center gap-4 text-xs text-slate-500 mb-6">
+                            <span class="flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> 98 Questions</span>
+                            <span class="flex items-center gap-1"><i data-lucide="layers" class="w-4 h-4"></i> 4 Modules</span>
+                        </div>
+                        <button onclick="startTest(1)" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+                            Start Test
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Test Card 2 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="h-2 bg-indigo-600"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2 py-1 rounded">Full Length</span>
+                            <span class="text-slate-400 text-xs">2h 14m</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Practice Test 2</h3>
+                        <p class="text-sm text-slate-600 mb-4">Advanced difficulty questions focusing on higher-order thinking skills.</p>
+                        <div class="flex items-center gap-4 text-xs text-slate-500 mb-6">
+                            <span class="flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> 98 Questions</span>
+                            <span class="flex items-center gap-1"><i data-lucide="layers" class="w-4 h-4"></i> 4 Modules</span>
+                        </div>
+                        <button onclick="startTest(2)" class="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2">
+                            Start Test
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Test Card 3 -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="h-2 bg-emerald-600"></div>
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded">Quick Practice</span>
+                            <span class="text-slate-400 text-xs">30m</span>
+                        </div>
+                        <h3 class="font-bold text-lg text-slate-900 mb-2">Math Focus</h3>
+                        <p class="text-sm text-slate-600 mb-4">Targeted math practice with calculator and no-calculator sections.</p>
+                        <div class="flex items-center gap-4 text-xs text-slate-500 mb-6">
+                            <span class="flex items-center gap-1"><i data-lucide="help-circle" class="w-4 h-4"></i> 44 Questions</span>
+                            <span class="flex items-center gap-1"><i data-lucide="calculator" class="w-4 h-4"></i> 2 Modules</span>
+                        </div>
+                        <button onclick="startTest(3)" class="w-full bg-emerald-600 text-white py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors flex items-center justify-center gap-2">
+                            Start Test
+                            <i data-lucide="play" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Interface (Hidden by default) -->
+        <div id="view-test" class="view-section hidden h-full flex flex-col bg-white">
+            <!-- Test Header -->
+            <div class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between shadow-sm z-20">
+                <div class="flex items-center gap-4">
+                    <button onclick="exitTest()" class="text-slate-500 hover:text-slate-700 flex items-center gap-2 text-sm font-medium">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                        Exit
+                    </button>
+                    <div class="h-6 w-px bg-slate-200"></div>
+                    <div>
+                        <h3 id="test-section-title" class="font-bold text-slate-900">Reading and Writing</h3>
+                        <p id="test-module-title" class="text-xs text-slate-500">Module 1 of 2</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <div class="text-right">
+                        <p class="text-xs text-slate-500 mb-1">Question</p>
+                        <p class="font-bold text-slate-900"><span id="current-question-num">1</span> of <span id="total-questions">27</span></p>
+                    </div>
+                    <div class="w-32 h-2 bg-slate-200 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-blue-600 transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-lg">
+                        <i data-lucide="clock" class="w-4 h-4 text-slate-600"></i>
+                        <span id="test-timer" class="font-mono font-semibold text-slate-700">32:00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Content -->
+            <div class="flex-1 overflow-y-auto p-8">
+                <div class="max-w-3xl mx-auto">
+                    <!-- Question Container -->
+                    <div id="question-container" class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm">
+                        <!-- Passage (if applicable) -->
+                        <div id="passage-container" class="mb-6 p-6 bg-slate-50 rounded-xl border border-slate-100 hidden">
+                            <p class="text-sm text-slate-700 leading-relaxed italic" id="passage-text"></p>
+                        </div>
+
+                        <!-- Question Text -->
+                        <div class="mb-8">
+                            <span class="inline-block bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded mb-3" id="question-type">Reading</span>
+                            <h4 id="question-text" class="text-lg font-medium text-slate-900 leading-relaxed"></h4>
+                        </div>
+
+                        <!-- Options -->
+                        <div id="options-container" class="space-y-3">
+                            <!-- Options injected by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation -->
+                    <div class="flex justify-between items-center mt-8 max-w-3xl mx-auto">
+                        <button onclick="previousQuestion()" id="btn-prev" class="px-6 py-3 rounded-lg border border-slate-300 text-slate-700 font-medium hover:bg-slate-50 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                            Previous
+                        </button>
+                        
+                        <button onclick="nextQuestion()" id="btn-next" class="px-6 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 shadow-lg shadow-blue-200">
+                            Next
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module Transition Screen -->
+        <div id="view-module-transition" class="view-section hidden h-full flex items-center justify-center bg-slate-50 p-8">
+            <div class="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-12">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="coffee" class="w-10 h-10 text-blue-600"></i>
+                </div>
+                <h2 id="transition-title" class="text-2xl font-bold text-slate-900 mb-4">Module 1 Complete!</h2>
+                <p id="transition-desc" class="text-slate-600 mb-8 leading-relaxed">
+                    Great job! Take a short break before starting the next module. You have a 10-minute break.
+                </p>
+                <button onclick="startNextModule()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-200 hover:shadow-xl transform hover:-translate-y-0.5">
+                    Start Module 2
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Transition Screen -->
+        <div id="view-section-transition" class="view-section hidden h-full flex items-center justify-center bg-slate-50 p-8">
+            <div class="max-w-md w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-12">
+                <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="check-circle" class="w-10 h-10 text-emerald-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-4">English Section Complete!</h2>
+                <p class="text-slate-600 mb-8 leading-relaxed">
+                    You've completed the Reading and Writing section. Next up: Math. You may take a break before continuing.
+                </p>
+                <button onclick="startMathSection()" class="w-full bg-emerald-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 hover:shadow-xl transform hover:-translate-y-0.5">
+                    Continue to Math
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Complete Screen -->
+        <div id="view-test-complete" class="view-section hidden h-full flex items-center justify-center bg-slate-50 p-8">
+            <div class="max-w-lg w-full text-center bg-white rounded-2xl shadow-lg border border-slate-200 p-12">
+                <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-blue-200">
+                    <i data-lucide="trophy" class="w-12 h-12 text-white"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-slate-900 mb-4">Test Complete!</h2>
+                <p class="text-slate-600 mb-8 leading-relaxed text-lg">
+                    Amazing work! You've completed a full Digital SAT practice test.
+                </p>
+                <div class="grid grid-cols-2 gap-4 mb-8">
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <p class="text-sm text-slate-500 mb-1">English Score</p>
+                        <p class="text-2xl font-bold text-slate-900">--</p>
+                    </div>
+                    <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                        <p class="text-sm text-slate-500 mb-1">Math Score</p>
+                        <p class="text-2xl font-bold text-slate-900">--</p>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <button onclick="navigateTo('practice')" class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                        Back to Practice Tests
+                    </button>
+                    <button onclick="navigateTo('home')" class="w-full bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold hover:bg-slate-200 transition-colors">
+                        Return Home
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress View (Placeholder) -->
+        <div id="view-progress" class="view-section hidden p-8 max-w-6xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">Your Progress</h2>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="bar-chart-2" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Detailed analytics coming soon</h3>
+                <p class="text-slate-500">Track your improvement over time with detailed score breakdowns.</p>
+            </div>
+        </div>
+
+        <!-- Resources View (Placeholder) -->
+        <div id="view-resources" class="view-section hidden p-8 max-w-6xl mx-auto fade-in">
+            <h2 class="text-3xl font-bold text-slate-900 mb-6">Study Resources</h2>
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-12 text-center">
+                <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i data-lucide="book-open" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900 mb-2">Resources coming soon</h3>
+                <p class="text-slate-500">Access study guides, formula sheets, and vocabulary lists.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Set current date
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        // Countdown Timer
+        function updateCountdown() {
+            const targetDate = new Date('March 14, 2025 08:00:00').getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById('countdown-container').classList.add('hidden');
+                document.getElementById('countdown-expired').classList.remove('hidden');
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('countdown-days').textContent = days.toString().padStart(2, '0');
+            document.getElementById('countdown-hours').textContent = hours.toString().padStart(2, '0');
+            document.getElementById('countdown-minutes').textContent = minutes.toString().padStart(2, '0');
+            document.getElementById('countdown-seconds').textContent = seconds.toString().padStart(2, '0');
+        }
+
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Navigation
+        function navigateTo(view) {
+            // Hide all views
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            
+            // Show selected view
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`nav-${view}`).classList.add('active');
+            
+            // Special handling for test view to ensure proper display
+            if (view === 'test') {
+                document.getElementById('view-test').classList.remove('hidden');
+            }
+        }
+
+        // Test State Management
+        let currentTest = null;
+        let currentSection = 'english'; // 'english' or 'math'
+        let currentModule = 1; // 1 or 2
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let testTimer = null;
+        let timeRemaining = 32 * 60; // 32 minutes per module
+
+        // Sample Questions Database
+        const testQuestions = {
+            english: {
+                module1: [
+                    { type: 'Reading', passage: 'The explorer stood at the edge of the cliff, gazing at the vast expanse below. The wind howled, carrying whispers of ancient stories.', question: 'As used in the text, the word "whispers" most nearly means:', options: ['Quiet sounds', 'Secret information', 'Warnings', 'Memories'], answer: 0 },
+                    { type: 'Grammar', question: 'Which choice completes the sentence with the most logical transition? The experiment was successful; _____, the team decided to publish the results immediately.', options: ['however', 'therefore', 'meanwhile', 'nevertheless'], answer: 1 },
+                    { type: 'Reading', passage: 'The city council proposed a new ordinance to reduce traffic congestion in the downtown area.', question: 'The primary purpose of the ordinance is to:', options: ['Increase parking fees', 'Reduce traffic congestion', 'Expand public transportation', 'Build new roads'], answer: 1 },
+                    { type: 'Grammar', question: 'Identify the error in the following sentence: "The group of students are going on a field trip tomorrow."', options: ['group', 'students', 'are', 'tomorrow'], answer: 2 },
+                    { type: 'Reading', passage: 'Dr. Martinez spent decades researching the behavior of honeybees, documenting their complex communication patterns.', question: 'The passage suggests that honeybee communication is:', options: ['Simple and direct', 'Random and unpredictable', 'Complex and patterned', 'Limited to sounds'], answer: 2 },
+                    { type: 'Grammar', question: 'Which choice best maintains the tone of the passage? The scientist was _____ by the unexpected results.', options: ['super shocked', 'taken aback', 'hella surprised', 'OMG shocked'], answer: 1 },
+                    { type: 'Reading', passage: 'The new policy aims to balance economic growth with environmental protection.', question: 'The word "balance" implies that the policy seeks to:', options: ['Eliminate economic growth', 'Prioritize environment only', 'Find a compromise', 'Delay both goals'], answer: 2 },
+                    { type: 'Grammar', question: 'Choose the word that best fits the blank: The _____ of the novel kept readers engaged until the very end.', options: ['boring plot', 'suspense', 'confusion', 'length'], answer: 1 },
+                    { type: 'Reading', passage: 'Archaeologists discovered artifacts dating back 3,000 years, shedding light on ancient trade routes.', question: 'The artifacts suggest that ancient civilizations:', options: ['Were isolated', 'Engaged in trade', 'Had no technology', 'Lived recently'], answer: 1 },
+                    { type: 'Grammar', question: 'Which revision corrects the run-on sentence? "The concert was amazing we danced all night."', options: ['The concert was amazing, we danced all night.', 'The concert was amazing; we danced all night.', 'The concert was amazing we, danced all night.', 'No change needed'], answer: 1 }
+                ],
+                module2: [
+                    { type: 'Reading', passage: 'The architect believed that buildings should harmonize with their natural surroundings rather than dominate them.', question: 'The architect\'s philosophy emphasizes:', options: ['Modern materials', 'Dominant structures', 'Natural harmony', 'Urban density'], answer: 2 },
+                    { type: 'Grammar', question: 'Select the correct punctuation: "After the meeting ended______ we went to lunch."', options: [',', ';', ':', 'no punctuation'], answer: 0 },
+                    { type: 'Reading', passage: 'Climate data from the last century shows a steady increase in global temperatures.', question: 'The data indicates that global temperatures have:', options: ['Decreased', 'Remained stable', 'Increased', 'Fluctuated randomly'], answer: 2 },
+                    { type: 'Grammar', question: 'Which pronoun correctly completes the sentence? "Each student must bring _____ own calculator."', options: ['their', 'his or her', 'its', 'they'], answer: 1 },
+                    { type: 'Reading', passage: 'The symphony orchestra practiced for months before their international tour.', question: 'The passage implies that the orchestra:', options: ['Is inexperienced', 'Values preparation', 'Dislikes touring', 'Practices rarely'], answer: 1 },
+                    { type: 'Grammar', question: 'Identify the subject of the sentence: "Running in the morning energizes me for the day."', options: ['Running', 'morning', 'energizes', 'day'], answer: 0 },
+                    { type: 'Reading', passage: 'The invention of the printing press revolutionized the spread of information.', question: 'The word "revolutionized" suggests the printing press:', options: ['Had little impact', 'Caused minor changes', 'Transformed society', 'Was quickly forgotten'], answer: 2 },
+                    { type: 'Grammar', question: 'Choose the correct form: "If I _____ you, I would study harder."', options: ['was', 'were', 'am', 'be'], answer: 1 },
+                    { type: 'Reading', passage: 'Bioluminescence in deep-sea creatures serves multiple purposes, including communication and hunting.', question: 'According to the passage, bioluminescence is used for:', options: ['Only defense', 'Communication and hunting', 'Navigation only', 'Camouflage'], answer: 1 },
+                    { type: 'Grammar', question: 'Which choice creates the best parallel structure? "She likes hiking, swimming, and _____."', options: ['to bike', 'biking', 'bikes', 'she bikes'], answer: 1 }
+                ]
+            },
+            math: {
+                module1: [
+                    { type: 'Math', question: 'If 3x + 7 = 22, what is the value of x?', options: ['3', '4', '5', '6'], answer: 2, calc: true },
+                    { type: 'Math', question: 'A rectangle has a length of 12 and a width of 8. What is its area?', options: ['20', '40', '96', '100'], answer: 2, calc: true },
+                    { type: 'Math', question: 'If f(x) = 2x² - 3x + 1, what is f(2)?', options: ['3', '5', '7', '9'], answer: 0, calc: true },
+                    { type: 'Math', question: 'What is the slope of the line 2y = 6x + 4?', options: ['2', '3', '4', '6'], answer: 1, calc: true },
+                    { type: 'Math', question: 'A triangle has angles measuring 45° and 90°. What is the measure of the third angle?', options: ['25°', '35°', '45°', '55°'], answer: 2, calc: false },
+                    { type: 'Math', question: 'If 2^x = 32, what is x?', options: ['4', '5', '6', '16'], answer: 1, calc: false },
+                    { type: 'Math', question: 'What is 25% of 80?', options: ['16', '20', '25', '40'], answer: 1, calc: false },
+                    { type: 'Math', question: 'Solve for y: 4y - 8 = 2y + 6', options: ['5', '7', '8', '14'], answer: 1, calc: true },
+                    { type: 'Math', question: 'A circle has a radius of 3. What is its area? (Use π = 3.14)', options: ['9.42', '18.84', '28.26', '56.52'], answer: 2, calc: true },
+                    { type: 'Math', question: 'What is the median of the set: {3, 7, 8, 12, 15}?', options: ['7', '8', '9', '12'], answer: 1, calc: false }
+                ],
+                module2: [
+                    { type: 'Math', question: 'If x² - 9 = 0, what are the possible values of x?', options: ['3 only', '-3 only', '3 and -3', '9 and -9'], answer: 2, calc: true },
+                    { type: 'Math', question: 'A store offers a 20% discount on a $120 jacket. What is the sale price?', options: ['$24', '$96', '$100', '$144'], answer: 1, calc: true },
+                    { type: 'Math', question: 'What is the probability of rolling a 6 on a fair six-sided die?', options: ['1/3', '1/4', '1/6', '1/12'], answer: 2, calc: false },
+                    { type: 'Math', question: 'If 5x - 3 = 2x + 9, what is x?', options: ['2', '3', '4', '6'], answer: 2, calc: true },
+                    { type: 'Math', question: 'A right triangle has legs of 6 and 8. What is the hypotenuse?', options: ['10', '12', '14', '100'], answer: 0, calc: true },
+                    { type: 'Math', question: 'What is the value of 3³?', options: ['6', '9', '27', '81'], answer: 2, calc: false },
+                    { type: 'Math', question: 'If f(x) = x + 3 and g(x) = 2x, what is f(g(4))?', options: ['11', '14', '20', '22'], answer: 0, calc: true },
+                    { type: 'Math', question: 'What is 15% of 200?', options: ['20', '25', '30', '35'], answer: 2, calc: false },
+                    { type: 'Math', question: 'Solve: |x - 5| = 3', options: ['2 only', '8 only', '2 and 8', '-2 and -8'], answer: 2, calc: false },
+                    { type: 'Math', question: 'A square has a perimeter of 36. What is its area?', options: ['9', '36', '81', '324'], answer: 2, calc: true }
+                ]
+            }
+        };
+
+        function startTest(testId) {
+            currentTest = testId;
+            currentSection = 'english';
+            currentModule = 1;
+            currentQuestionIndex = 0;
+            userAnswers = {};
+            timeRemaining = 32 * 60;
+            
+            document.getElementById('view-practice').classList.add('hidden');
+            document.getElementById('view-test').classList.remove('hidden');
+            
+            // Hide all sidebar items active state
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            
+            startTimer();
+            loadQuestion();
+        }
+
+        function startTimer() {
+            if (testTimer) clearInterval(testTimer);
+            testTimer = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                document.getElementById('test-timer').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(testTimer);
+                    nextQuestion(); // Auto-advance when time runs out
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            const questions = testQuestions[currentSection][`module${currentModule}`];
+            const question = questions[currentQuestionIndex];
+            
+            // Update headers
+            document.getElementById('test-section-title').textContent = 
+                currentSection === 'english' ? 'Reading and Writing' : 'Math';
+            document.getElementById('test-module-title').textContent = 
+                `Module ${currentModule} of 2`;
+            document.getElementById('current-question-num').textContent = currentQuestionIndex + 1;
+            document.getElementById('total-questions').textContent = questions.length;
+            
+            // Update progress bar
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            
+            // Load passage if exists
+            const passageContainer = document.getElementById('passage-container');
+            if (question.passage) {
+                passageContainer.classList.remove('hidden');
+                document.getElementById('passage-text').textContent = question.passage;
+            } else {
+                passageContainer.classList.add('hidden');
+            }
+            
+            // Load question
+            document.getElementById('question-type').textContent = question.type;
+            document.getElementById('question-text').textContent = question.question;
+            
+            // Load options
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionId = `option-${index}`;
+                const isChecked = userAnswers[`${currentSection}-${currentModule}-${currentQuestionIndex}`] === index ? 'checked' : '';
+                
+                optionsContainer.innerHTML += `
+                    <div class="relative">
+                        <input type="radio" name="answer" id="${optionId}" value="${index}" 
+                               class="option-input sr-only" ${isChecked} onchange="selectAnswer(${index})">
+                        <label for="${optionId}" class="option-label block w-full p-4 border-2 border-slate-200 rounded-xl cursor-pointer transition-all duration-200 hover:border-blue-300 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-slate-600 border border-slate-200">
+                                ${String.fromCharCode(65 + index)}
+                            </div>
+                            <span class="text-slate-700 font-medium">${option}</span>
+                        </label>
+                    </div>
+                `;
+            });
+            
+            // Update button states
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            const isLastQuestion = currentQuestionIndex === questions.length - 1;
+            const isLastModule = currentModule === 2;
+            const isLastSection = currentSection === 'math';
+            
+            const nextBtn = document.getElementById('btn-next');
+            if (isLastQuestion && isLastModule && isLastSection) {
+                nextBtn.innerHTML = 'Submit Test <i data-lucide="check" class="w-4 h-4"></i>';
+            } else if (isLastQuestion) {
+                nextBtn.innerHTML = 'Continue <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            } else {
+                nextBtn.innerHTML = 'Next <i data-lucide="arrow-right" class="w-4 h-4"></i>';
+            }
+            
+            // Re-initialize icons
+            lucide.createIcons();
+        }
+
+        function selectAnswer(index) {
+            userAnswers[`${currentSection}-${currentModule}-${currentQuestionIndex}`] = index;
+        }
+
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            const questions = testQuestions[currentSection][`module${currentModule}`];
+            
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                // End of module
+                if (currentModule === 1) {
+                    showModuleTransition();
+                } else if (currentSection === 'english') {
+                    showSectionTransition();
+                } else {
+                    showTestComplete();
+                }
+            }
+        }
+
+        function showModuleTransition() {
+            clearInterval(testTimer);
+            document.getElementById('view-test').classList.add('hidden');
+            document.getElementById('view-module-transition').classList.remove('hidden');
+            document.getElementById('transition-title').textContent = 
+                `Module ${currentModule} Complete!`;
+        }
+
+        function startNextModule() {
+            currentModule = 2;
+            currentQuestionIndex = 0;
+            timeRemaining = 32 * 60;
+            document.getElementById('view-module-transition').classList.add('hidden');
+            document.getElementById('view-test').classList.remove('hidden');
+            startTimer();
+            loadQuestion();
+        }
+
+        function showSectionTransition() {
+            clearInterval(testTimer);
+            document.getElementById('view-test').classList.add('hidden');
+            document.getElementById('view-section-transition').classList.remove('hidden');
+        }
+
+        function startMathSection() {
+            currentSection = 'math';
+            currentModule = 1;
+            currentQuestionIndex = 0;
+            timeRemaining = 35 * 60; // Math gets 35 minutes
+            document.getElementById('view-section-transition').classList.add('hidden');
+            document.getElementById('view-test').classList.remove('hidden');
+            startTimer();
+            loadQuestion();
+        }
+
+        function showTestComplete() {
+            clearInterval(testTimer);
+            document.getElementById('view-test').classList.add('hidden');
+            document.getElementById('view-test-complete').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function exitTest() {
+            if (confirm('Are you sure you want to exit? Your progress will be lost.')) {
+                clearInterval(testTimer);
+                document.getElementById('view-test').classList.add('hidden');
+                document.getElementById('view-module-transition').classList.add('hidden');
+                document.getElementById('view-section-transition').classList.add('hidden');
+                document.getElementById('view-test-complete').classList.add('hidden');
+                document.getElementById('view-practice').classList.remove('hidden');
+                document.getElementById('nav-practice').classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
